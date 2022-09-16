@@ -14,6 +14,8 @@ from sklearn.model_selection import train_test_split
 import external as ext
 from boxScore import boxScore
 from codetiming import Timer
+import lime
+from lime import lime_tabular
 
 
 
@@ -23,7 +25,7 @@ t = Timer()
 t.start()
 
 years="2019-20"
-# stats="advance"
+# stats="traditional"
 stats='advance'
 box_score=boxScore(years,stats)
 x_train, x_test, y_train, y_test = train_test_split(box_score.dfBoxscores,box_score.LabelResult,test_size=0.076,random_state=8 )
@@ -41,12 +43,12 @@ del x_train['HOME_O']
 
 
 
-activation=['relu','sigmoid']
-
-number_neurons=[10,30,50,100,150,200]
-# number_neurons=[10]
-possible_learning_rate=[0.0001,0.001,0.01]
-# possible_learning_rate=[0.001]
+# activation=['relu','sigmoid']
+activation=['relu']
+# number_neurons=[10,30,50,100,150,200]
+number_neurons=[10]
+# possible_learning_rate=[0.0001,0.001,0.01]
+possible_learning_rate=[0.001]
 
 
 
@@ -76,6 +78,7 @@ for nN in number_neurons:
                     500
                    
                 )
+                
                 #Saved the best model based on the accuracy
                 if(res['val_acc']>bestRes['val_acc']):
                     bestModel=model
@@ -84,13 +87,24 @@ for nN in number_neurons:
                     
                 
     print("Best model",bestRes)
-    f = open("saved_model_"+stats+"/summary.txt", "a")
-    tmpName=str(bestRes['num_neurons'])+"_"+str(bestRes['acti_fun'])+"_"+str(bestRes['learning_rate'])+"_LOSS_"+str(bestRes['loss'])+"_ACC_"+str(bestRes['acc'])+"_LOSSVAL_"+str(bestRes['val_loss'])+"_ACCVAL_"+str(bestRes['val_acc'])  
-    f.write(tmpName+"\n")
-    f.close()
+
+    # f = open("saved_model_"+stats+"/summary.txt", "a")
+    # tmpName=str(bestRes['num_neurons'])+"_"+str(bestRes['acti_fun'])+"_"+str(bestRes['learning_rate'])+"_LOSS_"+str(bestRes['loss'])+"_ACC_"+str(bestRes['acc'])+"_LOSSVAL_"+str(bestRes['val_loss'])+"_ACCVAL_"+str(bestRes['val_acc'])  
+    # f.write(tmpName+"\n")
+    # f.close()
     # bestModel.save("saved_model_"+stats+"/"+str(bestRes['num_neurons']))
 
-
+explainer = lime_tabular.LimeTabularExplainer(
+                        training_data=np.array(x_train),
+                        feature_names=x_train.columns,
+                        class_names=['win', 'lose'],
+                        mode='classification'
+                    )
+exp = explainer.explain_instance(
+    data_row=x_test.iloc[1], 
+    predict_fn=model.predict
+)
+exp.show_in_notebook(show_table=True)
 t.stop()
 winsound.Beep(440,2000)
 

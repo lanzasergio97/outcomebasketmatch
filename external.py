@@ -38,31 +38,3 @@ def uniteBoxScores(para,box_score):
 
 
 
-#TODO Eliminate separation function
-
-        
-# #Used for cross validation:
-# #Dataset is divided in 10 fold
-# #For each i-th elements of resulTrain and resultTest there is a different mixed of this 10 parts
-# # example:
-# # resulTrain[0]: have from 0-8-th fold as train and resultTest[0] have just the 9-th as test
-# # 
-# def separation(x_train,y_train):
-#     resultTrain=[]
-#     resultTest=[]
-#     sliceLen=len(x_train)/10
-#     x_train=x_train.values.tolist()
-#     for i in range(0,10):  
-#             indexArray=range(int(i*sliceLen),int((i+1)*sliceLen))
-#             testX=x_train[int(i*sliceLen):int((i+1)*sliceLen)]
-#             testY=y_train[int(i*sliceLen):int((i+1)*sliceLen)]
-#             trainX=x_train.copy()
-#             trainY=y_train.copy()
-#             for ele in sorted(indexArray, reverse = True):
-#                 del trainX[ele]
-#                 del trainY[ele]
-#             resultTrain.append([trainX,trainY])
-#             resultTest.append([testX,testY])
-
-
-#     return resultTrain,resultTest
