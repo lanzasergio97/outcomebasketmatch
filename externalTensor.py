@@ -1,10 +1,9 @@
-from operator import truediv
-from tabnanny import verbose
+
 import wandb
 import pandas as pd
 import numpy as np
 from tensorflow import keras
-
+from sklearn.model_selection import KFold
 import tensorflow as tf
 """
 input
@@ -99,21 +98,18 @@ def train(result,loss_fn,train_dataset, val_dataset,  model, optimizer,
 
 
 
-def trainBasic(res,array_train,array_test, x_validate, y_validate, model,epochs=10):
+def trainBasic(res,X,Y, x_validate, y_validate, model,kf,epochs=10):
     
     lossArray=[]
     accuracyArray=[]
     valAccuracyArray=[]
     valLossArray=[]
+    Y=np.array(Y)
     
-    for i in range(len(array_train)):  
-        trainX=array_train[i][0]
-        trainY=array_train[i][1]
-        testX=array_test[i][0]
-        testY=array_test[i][1]
+    for train_index , test_index in kf.split(X):
+        trainX , testX = X.iloc[train_index,:],X.iloc[test_index,:]
+        trainY , testY = Y[train_index] , Y[test_index]
         
-       
-
         model.fit(trainX,trainY,batch_size=200,verbose=False,epochs=epochs)
        
         tmp=model.evaluate(np.asarray(testX),np.asarray(testY), verbose=False)

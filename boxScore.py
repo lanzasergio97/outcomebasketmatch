@@ -49,7 +49,7 @@ class boxScore:
         else:
             indexSecondTeam=19
         # Retrive all BoxScores from the selected season
-        with open('include\BoxScoresFile\\'+self.name,'r') as f:
+        with open('BoxScoresFile\\'+self.name,'r') as f:
                 fr=f.readlines()  
                 for line in fr:
             
@@ -59,7 +59,7 @@ class boxScore:
                     team=list(map(float, x))
                     team[0]=team[0]
                     team[indexSecondTeam]=team[indexSecondTeam]
-                    # Regularize label to 0 and 1
+                    # Regularize label to 0 (win first team ) and 1 (win second team)
                     singleLabel=int(team[-1]) -1
                     if(singleLabel==0):
                         tmp=[1,0]

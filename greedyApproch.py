@@ -5,18 +5,22 @@
 
 import tensorflow as tf
 from tensorflow import keras
+import externalTensor as exT
 import winsound
 import numpy as np
-import externalTensor as exT
-from sklearn.model_selection import learning_curve, train_test_split
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+
 import external as ext
 from boxScore import boxScore
 from codetiming import Timer
-from sklearn import preprocessing
+
 
 
 
 # Prepare the training dataset
+t = Timer()
+t.start()
 
 years="2019-20"
 # stats="advance"
@@ -34,8 +38,7 @@ del x_train['HOME_O']
 
 
 
-#This method is used for cross-validation:
-array_train,array_test=ext.separation(x_train,y_train)
+
 
 
 activation=['relu','sigmoid']
@@ -45,10 +48,9 @@ number_neurons=[10,30,50,100,150,200]
 possible_learning_rate=[0.0001,0.001,0.01]
 # possible_learning_rate=[0.001]
 
-# modelsResult=[]
-t = Timer()
-t.start()
 
+
+kf = KFold(n_splits=10, random_state=1, shuffle=True)
 for nN in number_neurons:
     bestRes={'val_acc':0}
     for el in possible_learning_rate:
@@ -67,11 +69,12 @@ for nN in number_neurons:
                 
                 model.compile(optimizer=optimizer,loss=loss_fn,metrics=['accuracy'])
 
-                res=exT.trainBasic(res,array_train,array_test,
+                res=exT.trainBasic(res,x_train,y_train,
                     x_test, y_test, 
                     model,
+                    kf,
                     500
-                
+                   
                 )
                 #Saved the best model based on the accuracy
                 if(res['val_acc']>bestRes['val_acc']):
@@ -89,7 +92,7 @@ for nN in number_neurons:
 
 
 t.stop()
-winsound.Beep(440,3000)
+winsound.Beep(440,2000)
 
 
 
