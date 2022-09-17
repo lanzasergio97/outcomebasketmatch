@@ -11,7 +11,7 @@ import numpy as np
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 
-import external as ext
+
 from boxScore import boxScore
 from codetiming import Timer
 import lime
@@ -31,13 +31,8 @@ box_score=boxScore(years,stats)
 x_train, x_test, y_train, y_test = train_test_split(box_score.dfBoxscores,box_score.LabelResult,test_size=0.076,random_state=8 )
 tmp=[[x,y] for x,y in zip(list(x_test['ID']),list(x_test['ID_O'])  ) ]
 
-x_test=ext.uniteBoxScores(tmp,box_score)
-
-del x_train['ID']
-del x_train['ID_O']
-del x_train['HOME']
-del x_train['HOME_O']
-
+box_score=boxScore(years,stats)
+x_train, x_test, y_train, y_test=box_score.separation()
 
 
 

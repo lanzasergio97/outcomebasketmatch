@@ -18,6 +18,7 @@ def makeModel(neuronNumbers,activation,mode):
      
     else:
         inputStart=34
+        
     inputs = keras.Input(shape=(inputStart,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden")(inputs)
     

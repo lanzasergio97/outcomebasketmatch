@@ -1,7 +1,7 @@
 from logging import exception
 import pandas as pd
 import numpy as np
-import sys
+from sklearn.model_selection import train_test_split
 from nba_api.stats.static import teams
 
 def averegeStats(avgTeamHome,avgTeamAway,allTeamId):
@@ -61,6 +61,7 @@ class boxScore:
                     team[indexSecondTeam]=team[indexSecondTeam]
                     # Regularize label to 0 (win first team ) and 1 (win second team)
                     singleLabel=int(team[-1]) -1
+                    # Second Regularizion:  [1,0] (win first team ) and [0,1] (win second team)
                     if(singleLabel==0):
                         tmp=[1,0]
                     else:
@@ -122,8 +123,9 @@ class boxScore:
         dfBoxscores=pd.DataFrame(BoxScores)
     
         dfBoxscores.columns = columnNames
-        
-        
+        notWantedStats=["NET_RATING","PACE_PER40","USG_PCT"]
+        ll=[el+"_O" for el in notWantedStats ]
+        notWantedStats.extend(ll)
         #NORMALIZE THE DATA
         for cN in columnNames:
             if(cN!="ID" and cN!="ID_O"):
@@ -131,10 +133,53 @@ class boxScore:
         self.dfBoxscores=dfBoxscores
         self.dfAvg=dfAvg
         self.LabelResult=labelResult
-        
+        self.columnNames=columnNames
+        self.notWantedStats=notWantedStats
+    
+    # Separate the corpus in 4 file: xtrain,ytrain xtest and ytest
+    # x are the real data y just the label
+    def separation(self):
+        x_train, x_test, y_train, y_test = train_test_split(self.dfBoxscores,self.LabelResult,test_size=0.076,random_state=24 )
+        tmp=[[x,y] for x,y in zip(list(x_test['ID']),list(x_test['ID_O'])  ) ]
 
+        # Trasform the data-test:: the team's performance is substituted by his mean performance of any stats voice (both advance or traditional)
+        x_test=self.uniteBoxScores(tmp)
+        # Not usefull for training
+        del x_train['ID']
+        del x_train['ID_O']
+        del x_train['HOME']
+        del x_train['HOME_O']
+        return x_train, x_test, y_train, y_test
+    def uniteBoxScores(box_score,para):
+        result=[]
+        if(box_score.mode=='traditional'):
+            for couple in para:
+                tmp1=sum(box_score.dfAvg.loc[box_score.dfAvg['ID']==couple[0],'FG_PCT':'PTS'].values.tolist(),[])
+                tmp2=sum(box_score.dfAvg.loc[box_score.dfAvg['ID']==couple[1],'FG_PCT':'PTS'].values.tolist(),[])  
+                line=sum([tmp1,tmp2],[])
+            
+                result.append(line)
 
+            result=pd.DataFrame(result)
+            result.columns=[ 'FG_PCT', 'FG3_PCT', 'FT_PCT','OREB','DREB','AST','STL','BLK','TO','PF','PTS',
+            'FG_PCT_O', 'FG3_PCT_O', 'FT_PCT_O','OREB_O','DREB_O','AST_O','STL_O','BLK_O','TO_O','PF_O','PTS_O']
+            
+        else:
+            for couple in para:
+                tmp1=sum(box_score.dfAvg.loc[box_score.dfAvg['ID']==couple[0],'OFF_RATING':'PIE'].values.tolist(),[])
+                tmp2=sum(box_score.dfAvg.loc[box_score.dfAvg['ID']==couple[1],'OFF_RATING':'PIE'].values.tolist(),[])  
+                line=sum([tmp1,tmp2],[])
+            
+                result.append(line)
 
+            result=pd.DataFrame(result)
+            result.columns=[ "OFF_RATING","DEF_RATING","NET_RATING","AST_PCT","AST_TOV",   
+                                "AST_RATIO", "OREB_PCT","DREB_PCT","REB_PCT","TM_TOV_PCT","EFG_PCT","TS_PCT",       
+                                    "USG_PCT" ,"PACE", "PACE_PER40", "POSS","PIE",
 
+                                "OFF_RATING_O","DEF_RATING_O","NET_RATING_O","AST_PCT_O","AST_TOV_O",   
+                                "AST_RATIO_O", "OREB_PCT_O","DREB_PCT_O","REB_PCT_O","TM_TOV_PCT_O","EFG_PCT_O","TS_PCT_O",          
+                                    "USG_PCT_O" ,"PACE_O", "PACE_PER40_O", "POSS_O","PIE_O"]
+        return result
 
 

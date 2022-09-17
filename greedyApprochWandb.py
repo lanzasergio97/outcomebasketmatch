@@ -13,7 +13,7 @@ import numpy as np
 import wandb
 from wandb.keras import WandbCallback
 from sklearn.model_selection import learning_curve, train_test_split
-import external as ext
+
 from boxScore import boxScore
 from codetiming import Timer
 # wandb.login()
@@ -28,17 +28,10 @@ box_score=boxScore(years,stats)
 x_train, x_test, y_train, y_test = train_test_split(box_score.dfBoxscores,box_score.LabelResult,test_size=0.076,random_state=8 )
 tmp=[[x,y] for x,y in zip(list(x_test['ID']),list(x_test['ID_O'])  ) ]
 
-XFinalTest=ext.uniteBoxScores(tmp,box_score)
-
-del x_train['ID']
-del x_train['ID_O']
-del x_train['HOME']
-del x_train['HOME_O']
+box_score=boxScore(years,stats)
+x_train, x_test, y_train, y_test=box_score.separation()
 
 
-
-x_train = np.reshape(x_train, (-1, 22))
-XFinalTest = np.reshape(XFinalTest, (-1, 22))
 
 
 
@@ -49,7 +42,7 @@ XFinalTest = np.reshape(XFinalTest, (-1, 22))
 train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 train_dataset = train_dataset.shuffle(buffer_size=100).batch(BATCH_SIZE)
 
-val_dataset = tf.data.Dataset.from_tensor_slices((XFinalTest, y_test))
+val_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 val_dataset = val_dataset.batch(BATCH_SIZE)
 
 
