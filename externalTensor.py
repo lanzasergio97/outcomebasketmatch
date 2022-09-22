@@ -11,15 +11,10 @@ hidden one level (change  neuron's number and activaton funtion)
 output fixed softmax activation
 
 """
-def makeModel(neuronNumbers,activation,mode):
+def makeModel(neuronNumbers,activation,input_dimension):
     
-    if(mode=="traditional"):
-        inputStart=22
      
-    else:
-        inputStart=34
-        
-    inputs = keras.Input(shape=(inputStart,), name="input")
+    inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden")(inputs)
     
     outputs = keras.layers.Dense(2,activation=tf.keras.activations.softmax ,name="predictions")(hidden)
