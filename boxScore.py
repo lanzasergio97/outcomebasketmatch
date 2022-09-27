@@ -48,8 +48,10 @@ class boxScore:
             indexSecondTeam=13
         else:
             indexSecondTeam=19
+            
         # Retrive all BoxScores from the selected season
-        with open('BoxScoresFile\\'+self.name,'r') as f:
+        with open('BoxScoresFile//'+self.name,'r') as f:
+            
                 fr=f.readlines()  
                 for line in fr:
             
