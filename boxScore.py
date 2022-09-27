@@ -12,7 +12,7 @@ def averegeStats(avgTeamHome,avgTeamAway,allTeamId):
                 x2=np.take(avgTeamAway,indexRes,axis=0)[0]
                 
             
-                tmp=[   round( (t1+t2)/2,2) for t1,t2 in zip( x1,x2) ]
+                tmp=[   round( (t1+t2)/2,1) for t1,t2 in zip( x1,x2) ]
                 
                 avgTeam.append(np.array(tmp))
                 
@@ -84,10 +84,10 @@ class boxScore:
             if(gameAway):
                 res=np.take(BoxScores,gameAway,axis=0)
                 
-                avgTeamAway.append(np.round(res[:,indexSecondTeam:].mean(0),2) ) 
+                avgTeamAway.append(np.round(res[:,indexSecondTeam:].mean(0),1) ) 
             if(gameHome):
                 res=np.take(BoxScores,gameHome,axis=0)
-                avgTeamHome.append(np.round(res[:,0:indexSecondTeam].mean(0),2) )
+                avgTeamHome.append(np.round(res[:,0:indexSecondTeam].mean(0),1) )
 
 
 
@@ -158,6 +158,7 @@ class boxScore:
             del x_test[el]
         
         return x_train, x_test, y_train, y_test
+        
     def create_data_test(box_score,para):
         result=[]
      

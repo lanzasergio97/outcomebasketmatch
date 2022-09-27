@@ -100,29 +100,35 @@ def trainBasic(res,X,Y, x_validate, y_validate, model,kf,epochs=10):
     accuracyArray=[]
     valAccuracyArray=[]
     valLossArray=[]
-    Y=np.array(Y)
     
-    for train_index , test_index in kf.split(X):
-        trainX , testX = X.iloc[train_index,:],X.iloc[test_index,:]
-        trainY , testY = Y[train_index] , Y[test_index]
+    
+    
+    validation_data=(np.asarray(x_validate), np.asarray(y_validate))
+    
+    for train_index , _ in kf.split(X):
+        trainX  = X.iloc[train_index,:]
+        trainY  = Y[train_index]
         
-        model.fit(trainX,trainY,batch_size=200,verbose=False,epochs=epochs)
-       
-        tmp=model.evaluate(np.asarray(testX),np.asarray(testY), verbose=False)
-        lossArray.append(tmp[0])
-        accuracyArray.append(tmp[1])
-        tmp=model.evaluate(np.asarray(x_validate), np.asarray(y_validate), verbose=False)
-        valLossArray.append(tmp[0])
-        valAccuracyArray.append(tmp[1])
+        
+        tik=model.fit(trainX,trainY,batch_size=200,verbose=False,validation_data=validation_data,epochs=epochs)
+        
+      
+        
+        accuracyArray.append(round(np.mean(tik.history['accuracy']),4))
+        lossArray.append(round(np.mean(tik.history['loss']),4))
+        valLossArray.append(round(np.mean(tik.history['val_loss']),4))
+        valAccuracyArray.append(round(np.mean(tik.history['val_accuracy']),4))
 
-  
 
+        
+
+    
+    
+    
     res['loss']= round(np.mean(lossArray),4)
     res['acc']= round(np.mean(accuracyArray),4)
     res['val_loss']= round(np.mean(valLossArray),4)
     res['val_acc']=round(np.mean(valAccuracyArray),4)
-
-   
 
     # wandb.log({'epochs': epoch,
         #             'loss': np.mean(train_loss),
