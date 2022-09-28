@@ -25,7 +25,7 @@ BATCH_SIZE = 60
 years="2019-20"
 stats="traditional"
 box_score=boxScore(years,stats)
-x_train, x_test, y_train, y_test = train_test_split(box_score.dfBoxscores,box_score.LabelResult,test_size=0.076,random_state=8 )
+x_train, x_test, y_train, y_test = train_test_split(box_score.dfBoxscores,box_score.label_result,test_size=0.076,random_state=8 )
 tmp=[[x,y] for x,y in zip(list(x_test['ID']),list(x_test['ID_O'])  ) ]
 
 box_score=boxScore(years,stats)

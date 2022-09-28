@@ -4,12 +4,12 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from nba_api.stats.static import teams
 
-def averegeStats(avgTeamHome,avgTeamAway,allTeamId):
+def averegeStats(avg_team_home,avg_team_away,all_team_id):
         avgTeam=[]
-        for x1 in avgTeamHome:
-            indexRes=np.where(avgTeamAway==x1[0])[0]
+        for x1 in avg_team_home:
+            indexRes=np.where(avg_team_away==x1[0])[0]
             if(indexRes.size>0):
-                x2=np.take(avgTeamAway,indexRes,axis=0)[0]
+                x2=np.take(avg_team_away,indexRes,axis=0)[0]
                 
             
                 tmp=[   round( (t1+t2)/2,1) for t1,t2 in zip( x1,x2) ]
@@ -20,12 +20,37 @@ def averegeStats(avgTeamHome,avgTeamAway,allTeamId):
                 avgTeam.append(x1)
             
 
-        indexRes=np.where(avgTeamAway== list(set(allTeamId)-set(avgTeamHome[:,0])))[0]
+        indexRes=np.where(avg_team_away== list(set(all_team_id)-set(avg_team_home[:,0])))[0]
         for el in indexRes:
-            res=np.take(avgTeamAway,el,axis=0)
+            res=np.take(avg_team_away,el,axis=0)
             avgTeam.append(res)
         
         return avgTeam
+def create_average_data(box_scores,all_team_id,index_second_team):
+        avg_team_home=[]
+        avg_team_away=[]
+        for TM in all_team_id:
+            #For each team in allTeamId
+            team=np.where(box_scores==TM)
+            
+            home_games=[x for x,y in zip(team[0],team[1]) if y==0]
+            away_games=[x for x,y in zip(team[0],team[1]) if y==index_second_team]
+            if away_games:
+                res=np.take(box_scores,away_games,axis=0)
+                
+                avg_team_away.append(np.round(res[:,index_second_team:].mean(0),1) ) 
+            if home_games:
+                res=np.take(box_scores,home_games,axis=0)
+                avg_team_home.append(np.round(res[:,0:index_second_team].mean(0),1) )
+
+
+
+        avg_team_home=np.array(avg_team_home)
+        avg_team_away=np.array(avg_team_away)
+
+        #We make an array with the averege of all team's stats (no matter traditional or advance)
+        avg_team=averegeStats(avg_team_home,avg_team_away,all_team_id)
+        return avg_team
 
 class boxScore:
     
@@ -40,14 +65,14 @@ class boxScore:
         except Exception as e:
             raise Exception(e)
 
-        allTeamId=pd.DataFrame(teams.get_teams())['id']
-        BoxScores=[]
-        labelResult=[]
+        all_team_id=pd.DataFrame(teams.get_teams())['id']
+        box_scores=[]
+        label_result=[]
         # indexIdSecondTeam 
         if(mode=='traditional'):
-            indexSecondTeam=13
+            index_second_team=13
         else:
-            indexSecondTeam=19
+            index_second_team=19
             
         # Retrive all BoxScores from the selected season
         with open('BoxScoresFile//'+self.name,'r') as f:
@@ -60,7 +85,7 @@ class boxScore:
                     x=line.split() 
                     team=list(map(float, x))
                     team[0]=team[0]
-                    team[indexSecondTeam]=team[indexSecondTeam]
+                    team[index_second_team]=team[index_second_team]
                     # Regularize label to 0 (win first team ) and 1 (win second team)
                     singleLabel=int(team[-1]) -1
                     # Second Regularizion:  [1,0] (win first team ) and [0,1] (win second team)
@@ -68,50 +93,24 @@ class boxScore:
                         tmp=[1,0]
                     else:
                         tmp=[0,1]
-                    labelResult.append(tmp)
+                    label_result.append(tmp)
                     #From the boxscores we don't include the label
                     team.pop(-1)
-                    BoxScores.append(team)
+                    box_scores.append(team)
         
 
-        BoxScores=np.array(BoxScores)
-        avgTeamHome=[]
-        avgTeamAway=[]
-        for TM in allTeamId:
-            #For each team in allTeamId
-            team=np.where(BoxScores==TM)
-            
-            gameHome=[x for x,y in zip(team[0],team[1]) if y==0]
-            gameAway=[x for x,y in zip(team[0],team[1]) if y==indexSecondTeam]
-            if(gameAway):
-                res=np.take(BoxScores,gameAway,axis=0)
-                
-                avgTeamAway.append(np.round(res[:,indexSecondTeam:].mean(0),1) ) 
-            if(gameHome):
-                res=np.take(BoxScores,gameHome,axis=0)
-                avgTeamHome.append(np.round(res[:,0:indexSecondTeam].mean(0),1) )
-
-
-
-        avgTeamHome=np.array(avgTeamHome)
-        avgTeamAway=np.array(avgTeamAway)
-
-        #We make an array with the averege of all team's stats (no matter traditional or advance)
-        avgTeam=averegeStats(avgTeamHome,avgTeamAway,allTeamId)
-
-        
-
-
-        #Now we set the dataframe given the correct names for each stats.
-        # We differenziate by the mode 
+        box_scores=np.array(box_scores)
+    
+        #Now we fit the dataframe with the correct names for each stats.
+        # We differenziate by mode 
         
         if(mode=='traditional'):
-            columnNames=['ID', 'FG_PCT', 'FG3_PCT', 'FT_PCT','OREB','DREB','AST','STL','BLK','TO','PF','PTS','HOME',
+            column_names=['ID', 'FG_PCT', 'FG3_PCT', 'FT_PCT','OREB','DREB','AST','STL','BLK','TO','PF','PTS','HOME',
             'ID_O', 'FG_PCT_O', 'FG3_PCT_O', 'FT_PCT_O','OREB_O','DREB_O','AST_O','STL_O','BLK_O','TO_O','PF_O','PTS_O','HOME_O']
-            notWantedStats=['ID','HOME',"PTS"]
+            not_wanted_stats=['ID','HOME',"PTS"]
             
         else:
-            columnNames=["ID","OFF_RATING","DEF_RATING","NET_RATING","AST_PCT","AST_TOV",   
+            column_names=["ID","OFF_RATING","DEF_RATING","NET_RATING","AST_PCT","AST_TOV",   
                             "AST_RATIO", "OREB_PCT","DREB_PCT","REB_PCT","TM_TOV_PCT","EFG_PCT","TS_PCT",       
                                 "USG_PCT" ,"PACE", "PACE_PER40", "POSS","PIE",  "HOME",
 
@@ -119,28 +118,32 @@ class boxScore:
                             "AST_RATIO_O", "OREB_PCT_O","DREB_PCT_O","REB_PCT_O","TM_TOV_PCT_O","EFG_PCT_O","TS_PCT_O",          
                                 "USG_PCT_O" ,"PACE_O", "PACE_PER40_O", "POSS_O","PIE_O", "HOME_O"]
             
-            notWantedStats=["ID","HOME","NET_RATING","PACE_PER40","USG_PCT"]
+            not_wanted_stats=["ID","HOME","NET_RATING","AST_PCT","AST_TOV",   
+                            "AST_RATIO", "OREB_PCT","DREB_PCT","REB_PCT","TM_TOV_PCT","EFG_PCT","TS_PCT",       
+                                "USG_PCT" ,"PACE", "PACE_PER40", "POSS","PIE"]
 
-        tmp=[el+"_O" for el in notWantedStats ]
-        notWantedStats.extend(tmp)
-        separator=int(len(columnNames)/2)
+        tmp=[el+"_O" for el in not_wanted_stats ]
+        not_wanted_stats.extend(tmp)
+        separator=int(len(column_names)/2)
         
-        dfAvg=pd.DataFrame(avgTeam)
-        dfAvg.columns = columnNames[0:separator]
+        
 
-        dfBoxscores=pd.DataFrame(BoxScores)
+        df_box_scores=pd.DataFrame(box_scores)
     
-        dfBoxscores.columns = columnNames
-        
+        df_box_scores.columns = column_names
+
+        avg_team=create_average_data(box_scores,all_team_id,index_second_team)
+        dfAvg=pd.DataFrame(avg_team)
+        dfAvg.columns = column_names[0:separator]
         #NORMALIZE THE DATA
         # for cN in columnNames:
         #     if(cN!="ID" and cN!="ID_O"):
         #         dfBoxscores[cN] = dfBoxscores[cN] /dfBoxscores[cN].abs().max()
-        self.dfBoxscores=dfBoxscores
-        self.dfAvg=dfAvg
-        self.LabelResult=labelResult
-        self.columnNames=columnNames
-        self.notWantedStats=notWantedStats
+        self.df_box_scores=df_box_scores
+        self.average_data=dfAvg
+        self.label_result=label_result
+        self.column_names=column_names
+        self.not_wanted_stats=not_wanted_stats
     
    
 
@@ -149,30 +152,30 @@ class boxScore:
     # Separate the corpus in 4 file: xtrain,ytrain xtest and ytest
     # x are the real data y just the label
     def separation(self):
-        x_train, x_test, y_train, y_test = train_test_split(self.dfBoxscores,self.LabelResult,test_size=0.076,random_state=24 )
+        x_train, x_test, y_train, y_test = train_test_split(self.df_box_scores,self.label_result,test_size=0.076,random_state=24 )
         tmp=[[x,y] for x,y in zip(list(x_test['ID']),list(x_test['ID_O'])  ) ]
 
         # Trasform the data-test:: the team's performance is substituted by his mean performance of any stats voice (both advance or traditional)
         x_test=self.create_data_test(tmp)
         # Column not usefull for training and testing
-        for el in self.notWantedStats:
+        for el in self.not_wanted_stats:
             del x_train[el]
             del x_test[el]
         
         return x_train, x_test, y_train, y_test
         
-    def create_data_test(box_score,para):
+    def create_data_test(self,para):
         result=[]
      
         for couple in para:
-            tmp1=sum(box_score.dfAvg.loc[box_score.dfAvg['ID']==couple[0],:].values.tolist(),[])
-            tmp2=sum(box_score.dfAvg.loc[box_score.dfAvg['ID']==couple[1],:].values.tolist(),[])  
+            tmp1=sum(self.average_data.loc[self.average_data['ID']==couple[0],:].values.tolist(),[])
+            tmp2=sum(self.average_data.loc[self.average_data['ID']==couple[1],:].values.tolist(),[])  
             line=sum([tmp1,tmp2],[])
         
             result.append(line)
 
         result=pd.DataFrame(result)
-        result.columns=box_score.columnNames   
+        result.columns=self.column_names   
         
             
         
@@ -182,3 +185,4 @@ class boxScore:
         return result
 
 
+    
