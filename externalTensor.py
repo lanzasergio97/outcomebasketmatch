@@ -4,11 +4,13 @@ import pandas as pd
 import numpy as np
 from tensorflow import keras
 from sklearn.model_selection import KFold
+
+
 import tensorflow as tf
 """
 input
 hidden one level (change  neuron's number and activaton funtion)
-output fixed softmax activation
+output  softmax activation
 
 """
 def makeModel(neuronNumbers,activation,input_dimension):
@@ -40,8 +42,8 @@ def makeModelThird(neuronNumbers,activation,input_dimension):
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden")(inputs)
     
-    hidden1 = keras.layers.Dense(neuronNumbers*2, activation=activation,name="hidden1")(hidden)
-    droput= keras.layers.Dropout(.01,input_shape=(input_dimension,))(hidden1)
+    # hidden1 = keras.layers.Dense(neuronNumbers*2, activation=activation,name="hidden1")(hidden)
+    droput= keras.layers.Dropout(.06,input_shape=(input_dimension,))(hidden)
     outputs = keras.layers.Dense(2,activation=tf.keras.activations.softmax ,name="predictions")(droput)
 
     return keras.Model(inputs=inputs, outputs=outputs)
