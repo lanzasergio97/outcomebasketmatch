@@ -58,9 +58,14 @@ class boxScore:
         self.mode=mode
         self.name="BoxScore"+years+mode+".txt"
         #Just two modes: advance or traditional split
+        dict_mode={
+            "traditional":13,
+            "advance":19,
+            "fourfactors":10
+        }
         try:
             
-            assert (mode=="traditional" or mode=="advance"), "Only two modes"
+            assert (mode=="traditional" or mode=="advance" or mode=="fourfactors"), "Only three modes"
 
         except Exception as e:
             raise Exception(e)
@@ -69,13 +74,11 @@ class boxScore:
         box_scores=[]
         label_result=[]
         # indexIdSecondTeam 
-        if(mode=='traditional'):
-            index_second_team=13
-        else:
-            index_second_team=19
+     
+        index_second_team=dict_mode[mode]
             
         # Retrive all BoxScores from the selected season
-        with open('BoxScoresFile//'+self.name,'r') as f:
+        with open('BoxScoresFile/'+self.name,'r') as f:
             
                 fr=f.readlines()  
                 for line in fr:
@@ -104,12 +107,12 @@ class boxScore:
         #Now we fit the dataframe with the correct names for each stats.
         # We differenziate by mode 
         
-        if(mode=='traditional'):
+        if mode=='traditional':
             column_names=['ID', 'FG_PCT', 'FG3_PCT', 'FT_PCT','OREB','DREB','AST','STL','BLK','TO','PF','PTS','HOME',
             'ID_O', 'FG_PCT_O', 'FG3_PCT_O', 'FT_PCT_O','OREB_O','DREB_O','AST_O','STL_O','BLK_O','TO_O','PF_O','PTS_O','HOME_O']
             not_wanted_stats=['ID','HOME',"PTS"]
             
-        else:
+        if mode=="advance":
             column_names=["ID","OFF_RATING","DEF_RATING","NET_RATING","AST_PCT","AST_TOV",   
                             "AST_RATIO", "OREB_PCT","DREB_PCT","REB_PCT","TM_TOV_PCT","EFG_PCT","TS_PCT",       
                                 "USG_PCT" ,"PACE", "PACE_PER40", "POSS","PIE",  "HOME",
@@ -118,9 +121,15 @@ class boxScore:
                             "AST_RATIO_O", "OREB_PCT_O","DREB_PCT_O","REB_PCT_O","TM_TOV_PCT_O","EFG_PCT_O","TS_PCT_O",          
                                 "USG_PCT_O" ,"PACE_O", "PACE_PER40_O", "POSS_O","PIE_O", "HOME_O"]
             
-            not_wanted_stats=["ID","HOME","NET_RATING","AST_PCT","AST_TOV",   
-                            "AST_RATIO", "OREB_PCT","DREB_PCT","REB_PCT","TM_TOV_PCT","EFG_PCT","TS_PCT",       
-                                "USG_PCT" ,"PACE", "PACE_PER40", "POSS","PIE"]
+            not_wanted_stats=["ID","HOME","NET_RATING",       
+                                "USG_PCT" , "PACE_PER40"]
+        if mode=="fourfactors":
+            column_names=["ID","EFG_PCT","FTA_RATE", "TM_TOV_PCT","OREB_PCT", "HOME",
+            			
+                        "ID_O","EFG_PCT_O","FTA_RATE_O", "TM_TOV_PCT_O","OREB_PCT_O",  "HOME_O"]
+
+
+            not_wanted_stats=["ID","HOME"]
 
         tmp=[el+"_O" for el in not_wanted_stats ]
         not_wanted_stats.extend(tmp)
@@ -129,7 +138,7 @@ class boxScore:
         
 
         df_box_scores=pd.DataFrame(box_scores)
-    
+
         df_box_scores.columns = column_names
 
         avg_team=create_average_data(box_scores,all_team_id,index_second_team)
@@ -153,10 +162,15 @@ class boxScore:
     # x are the real data y just the label
     def separation(self):
         x_train, x_test, y_train, y_test = train_test_split(self.df_box_scores,self.label_result,test_size=0.076,random_state=24 )
-        tmp=[[x,y] for x,y in zip(list(x_test['ID']),list(x_test['ID_O'])  ) ]
+        
+        tmp=[[x,y,z] for x,y,z in zip(   list(x_test['ID']),list(x_test['ID_O']),list(x_test.index)  ) ]
+    
 
         # Trasform the data-test:: the team's performance is substituted by his mean performance of any stats voice (both advance or traditional)
+        
+        
         x_test=self.create_data_test(tmp)
+        
         # Column not usefull for training and testing
         for el in self.not_wanted_stats:
             del x_train[el]
@@ -164,19 +178,20 @@ class boxScore:
         
         return x_train, x_test, y_train, y_test
         
-    def create_data_test(self,para):
+    def create_data_test(self,list_parameters):
         result=[]
-     
-        for couple in para:
-            tmp1=sum(self.average_data.loc[self.average_data['ID']==couple[0],:].values.tolist(),[])
-            tmp2=sum(self.average_data.loc[self.average_data['ID']==couple[1],:].values.tolist(),[])  
+        index=[]
+        for triple in list_parameters:
+            tmp1=sum(self.average_data.loc[self.average_data['ID']==triple[0],:].values.tolist(),[])
+            tmp2=sum(self.average_data.loc[self.average_data['ID']==triple[1],:].values.tolist(),[])  
             line=sum([tmp1,tmp2],[])
-        
+            index.append(triple[2])
             result.append(line)
-
-        result=pd.DataFrame(result)
-        result.columns=self.column_names   
         
+        result=pd.DataFrame(result)
+
+        result.columns=self.column_names   
+        result.index=index
             
         
 
