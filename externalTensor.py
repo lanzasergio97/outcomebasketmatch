@@ -13,7 +13,7 @@ hidden one level (change  neuron's number and activaton funtion)
 output  softmax activation
 
 """
-def makeModel(neuronNumbers,activation,input_dimension):
+def makeModelSimple(neuronNumbers,activation,input_dimension):
     
      
     inputs = keras.Input(shape=(input_dimension,), name="input")
@@ -23,30 +23,43 @@ def makeModel(neuronNumbers,activation,input_dimension):
 
     return keras.Model(inputs=inputs, outputs=outputs)
 
-def makeModelSecond(neuronNumbers,activation,input_dimension):
+def makeModelL2(neuronNumbers,activation,input_dimension):
     
      
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden",
-    kernel_regularizer=keras.regularizers.l2(0.001))(inputs)
+    regularizer=keras.regularizers.l2(0.001))(inputs)
     
-    outputs = keras.layers.Dense(2,activation=tf.keras.activations.softmax,kernel_regularizer=keras.regularizers.l2(0.001),name="predictions")(hidden)
+    outputs = keras.layers.Dense(2,name="predictions")(hidden)
 
     return keras.Model(inputs=inputs, outputs=outputs)
 
 
 
-def makeModelThird(neuronNumbers,activation,input_dimension):
+def makeModelDropout(neuronNumbers,activation,input_dimension):
     
      
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden")(inputs)
     
-    # hidden1 = keras.layers.Dense(neuronNumbers*2, activation=activation,name="hidden1")(hidden)
     droput= keras.layers.Dropout(.06,input_shape=(input_dimension,))(hidden)
     outputs = keras.layers.Dense(2,activation=tf.keras.activations.softmax ,name="predictions")(droput)
 
     return keras.Model(inputs=inputs, outputs=outputs)
+
+def makeModelTwoLevel(neuronNumbers,activation,input_dimension):
+    
+     
+    inputs = keras.Input(shape=(input_dimension,), name="input")
+    hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden")(inputs)
+    
+    hidden1 = keras.layers.Dense(neuronNumbers*2, activation=activation,name="hidden1")(hidden)
+    droput= keras.layers.Dropout(.06,input_shape=(input_dimension,))(hidden1)
+    outputs = keras.layers.Dense(2,activation=tf.keras.activations.softmax ,name="predictions")(droput)
+
+    return keras.Model(inputs=inputs, outputs=outputs)
+
+
 
 def trainBasic(res,X,Y, x_validate, y_validate, model,kf,epochs=10):
     
