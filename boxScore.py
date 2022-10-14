@@ -58,14 +58,10 @@ class boxScore:
         self.mode=mode
         self.name="BoxScore"+years+mode+".txt"
         #Just two modes: advance or traditional split
-        dict_mode={
-            "traditional":13,
-            "advance":19,
-            "fourfactors":10
-        }
+       
         try:
             
-            assert (mode=="traditional" or mode=="advance" or mode=="fourfactors"), "Only three modes"
+            assert (mode=="traditional" or mode=="advance" ), "Only two modes"
 
         except Exception as e:
             raise Exception(e)
@@ -74,7 +70,10 @@ class boxScore:
         box_scores=[]
         label_result=[]
         # indexIdSecondTeam 
-     
+        dict_mode={
+            "traditional":13,
+            "advance":19
+        }
         index_second_team=dict_mode[mode]
             
         # Retrive all BoxScores from the selected season
@@ -142,14 +141,17 @@ class boxScore:
         df_box_scores.columns = column_names
 
         avg_team=create_average_data(box_scores,all_team_id,index_second_team)
-        dfAvg=pd.DataFrame(avg_team)
-        dfAvg.columns = column_names[0:separator]
-        #NORMALIZE THE DATA
-        # for cN in columnNames:
-        #     if(cN!="ID" and cN!="ID_O"):
-        #         dfBoxscores[cN] = dfBoxscores[cN] /dfBoxscores[cN].abs().max()
+        df_average_stats=pd.DataFrame(avg_team)
+        df_average_stats.columns = column_names[0:separator]
+        # NORMALIZE THE DATA
+        for cN in column_names:
+            if(cN!="ID" and cN!="ID_O"):
+                df_box_scores[cN] = df_box_scores[cN] /df_box_scores[cN].abs().max()
+                if(not cN.__contains__("_O")):
+                    df_average_stats[cN]=df_average_stats[cN]/df_average_stats[cN].abs().max()
+
         self.df_box_scores=df_box_scores
-        self.average_data=dfAvg
+        self.average_data=df_average_stats
         self.label_result=label_result
         self.column_names=column_names
         self.not_wanted_stats=not_wanted_stats

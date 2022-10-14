@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from tensorflow import keras
 from sklearn.model_selection import KFold
-
+from sklearn.model_selection import cross_validate
 
 import tensorflow as tf
 """
@@ -28,7 +28,7 @@ def makeModelL2(neuronNumbers,activation,input_dimension):
      
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden",
-    regularizer=keras.regularizers.l2(0.001))(inputs)
+    kernel_regularizer=keras.regularizers.l2(0.001))(inputs)
     
     outputs = keras.layers.Dense(2,name="predictions")(hidden)
 
@@ -42,7 +42,7 @@ def makeModelDropout(neuronNumbers,activation,input_dimension):
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden")(inputs)
     
-    droput= keras.layers.Dropout(.06,input_shape=(input_dimension,))(hidden)
+    droput= keras.layers.Dropout(.5,input_shape=(input_dimension,))(hidden)
     outputs = keras.layers.Dense(2,activation=tf.keras.activations.softmax ,name="predictions")(droput)
 
     return keras.Model(inputs=inputs, outputs=outputs)
@@ -59,7 +59,37 @@ def makeModelTwoLevel(neuronNumbers,activation,input_dimension):
 
     return keras.Model(inputs=inputs, outputs=outputs)
 
+def autoencoder(activation,input_dimension,vanish_coefficent):
 
+    inputs = keras.Input(shape=(input_dimension,), name="input")
+
+
+    encoded = keras.layers.Dense(vanish_coefficent, activation=activation)(inputs)
+
+    encoded = keras.layers.Dense(vanish_coefficent-5, activation=activation)(encoded)
+    encoded = keras.layers.Dense(vanish_coefficent-10, activation=activation)(encoded)
+
+    encoded = keras.layers.Dense(5, activation=activation)(encoded)
+    decoded = keras.layers.Dense(vanish_coefficent-10, activation=activation)(encoded)
+    decoded = keras.layers.Dense(vanish_coefficent-5, activation=activation)(decoded)
+    
+
+    decoded = keras.layers.Dense(vanish_coefficent, activation=activation)(decoded)
+
+    
+    decoded = keras.layers.Dense(input_dimension,activation="relu" )(decoded)
+    
+    autoencoder=keras.Model(inputs, decoded)
+    encoder=keras.Model(inputs, encoded)
+    
+    encoded_input = keras.Input(shape=(vanish_coefficent,))
+    # Retrieve the last layer of the autoencoder model
+    decoder_layer = autoencoder.layers[-1]
+    # Create the decoder model
+    decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
+
+    return autoencoder, encoder, decoder
+    
 
 def trainBasic(res,X,Y, x_validate, y_validate, model,kf,epochs=10):
     
