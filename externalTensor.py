@@ -13,6 +13,11 @@ hidden one level (change  neuron's number and activaton funtion)
 output  softmax activation
 
 """
+#TODO fare autoencoder 1 level e anche mod quello di 2 level, vedi tabelle dei valori del livello hidden 
+#TODO mod  makModelL2, param must change in 0.001,0.01,0.0001
+#TODO mod makeModelDropout, p must change in 0.5 0.6 0.65
+#TODO do ADA
+
 def makeModelSimple(neuronNumbers,activation,input_dimension):
     
      
@@ -25,10 +30,10 @@ def makeModelSimple(neuronNumbers,activation,input_dimension):
 
 def makeModelL2(neuronNumbers,activation,input_dimension):
     
-     
+    param=0.001
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden",
-    kernel_regularizer=keras.regularizers.l2(0.001))(inputs)
+    kernel_regularizer= (param))(inputs)
     
     outputs = keras.layers.Dense(2,name="predictions")(hidden)
 
@@ -38,11 +43,11 @@ def makeModelL2(neuronNumbers,activation,input_dimension):
 
 def makeModelDropout(neuronNumbers,activation,input_dimension):
     
-     
+    p=0.5
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden")(inputs)
     
-    droput= keras.layers.Dropout(.5,input_shape=(input_dimension,))(hidden)
+    droput= keras.layers.Dropout(p,input_shape=(input_dimension,))(hidden)
     outputs = keras.layers.Dense(2,activation=tf.keras.activations.softmax ,name="predictions")(droput)
 
     return keras.Model(inputs=inputs, outputs=outputs)
@@ -59,7 +64,7 @@ def makeModelTwoLevel(neuronNumbers,activation,input_dimension):
 
     return keras.Model(inputs=inputs, outputs=outputs)
 
-def autoencoder(activation,input_dimension,vanish_coefficent):
+def autoencoder_2_level(activation,input_dimension,vanish_coefficent):
 
     inputs = keras.Input(shape=(input_dimension,), name="input")
 
@@ -77,7 +82,7 @@ def autoencoder(activation,input_dimension,vanish_coefficent):
     decoded = keras.layers.Dense(vanish_coefficent, activation=activation)(decoded)
 
     
-    decoded = keras.layers.Dense(input_dimension,activation="relu" )(decoded)
+    decoded = keras.layers.Dense(input_dimension,activation="sigmoid" )(decoded)
     
     autoencoder=keras.Model(inputs, decoded)
     encoder=keras.Model(inputs, encoded)
