@@ -1,0 +1,188 @@
+2022-11-22 10:24:20,381 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Configure stats pid to 6732
+2022-11-22 10:24:20,381 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Loading settings from C:\Users\Calculos\.config\wandb\settings
+2022-11-22 10:24:20,381 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Loading settings from d:\UniSergio\BasketScripts\WaB\wandb\settings
+2022-11-22 10:24:20,381 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Loading settings from environment variables: {'_require_service': 'True'}
+2022-11-22 10:24:20,381 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program': '<python with no main file>'}
+2022-11-22 10:24:20,381 INFO    MainThread:6732 [wandb_init.py:_log_setup():461] Logging user logs to d:\UniSergio\BasketScripts\WaB\wandb\run-20221122_102420-okniozqz\logs\debug.log
+2022-11-22 10:24:20,382 INFO    MainThread:6732 [wandb_init.py:_log_setup():462] Logging internal logs to d:\UniSergio\BasketScripts\WaB\wandb\run-20221122_102420-okniozqz\logs\debug-internal.log
+2022-11-22 10:24:20,382 INFO    MainThread:6732 [wandb_init.py:_jupyter_setup():411] configuring jupyter hooks <wandb.sdk.wandb_init._WandbInit object at 0x000001A006896670>
+2022-11-22 10:24:20,383 INFO    MainThread:6732 [wandb_init.py:init():495] calling init triggers
+2022-11-22 10:24:20,383 INFO    MainThread:6732 [wandb_init.py:init():498] wandb.init called with sweep_config: {}
+config: {'learning_rate': 0.0001, 'num_neurons': 10, 'acti_fun': 'relu', 'batch_size': 200, 'epochs': 500, 'architecture': 'OneHiddenLayer', 'dataset': '2018-19_traditional', 'loss': 0.3396, 'acc': 0.8741, 'val_loss': 0.7002, 'val_acc': 0.62}
+2022-11-22 10:24:20,383 INFO    MainThread:6732 [wandb_init.py:init():548] starting backend
+2022-11-22 10:24:20,383 INFO    MainThread:6732 [wandb_init.py:init():552] setting up manager
+2022-11-22 10:24:20,388 INFO    MainThread:6732 [backend.py:_multiprocessing_setup():97] multiprocessing start_methods=spawn, using: spawn
+2022-11-22 10:24:20,400 INFO    MainThread:6732 [wandb_init.py:init():558] backend started and connected
+2022-11-22 10:24:20,405 INFO    MainThread:6732 [wandb_run.py:_label_probe_notebook():1105] probe notebook
+2022-11-22 10:24:20,406 INFO    MainThread:6732 [wandb_run.py:_label_probe_notebook():1115] Unable to probe notebook: 'NoneType' object has no attribute 'get'
+2022-11-22 10:24:20,406 INFO    MainThread:6732 [wandb_init.py:init():636] updated telemetry
+2022-11-22 10:24:20,407 INFO    MainThread:6732 [wandb_init.py:init():667] communicating run to backend with 30 second timeout
+2022-11-22 10:24:21,072 INFO    MainThread:6732 [wandb_run.py:_on_init():1982] communicating current version
+2022-11-22 10:24:21,238 INFO    MainThread:6732 [wandb_run.py:_on_init():1986] got version response upgrade_message: "wandb version 0.13.5 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2022-11-22 10:24:21,239 INFO    MainThread:6732 [wandb_init.py:init():700] starting run threads in backend
+2022-11-22 10:24:21,523 INFO    MainThread:6732 [wandb_run.py:_console_start():1962] atexit reg
+2022-11-22 10:24:21,524 INFO    MainThread:6732 [wandb_run.py:_redirect():1820] redirect: SettingsConsole.WRAP_RAW
+2022-11-22 10:24:21,524 INFO    MainThread:6732 [wandb_run.py:_redirect():1885] Wrapping output streams.
+2022-11-22 10:24:21,525 INFO    MainThread:6732 [wandb_run.py:_redirect():1907] Redirects installed.
+2022-11-22 10:24:21,526 INFO    MainThread:6732 [wandb_init.py:init():732] run started, returning control to user process
+2022-11-22 10:24:22,991 INFO    MainThread:6732 [wandb_init.py:_pause_backend():374] pausing backend
+2022-11-22 10:24:22,991 INFO    MainThread:6732 [jupyter.py:save_ipynb():377] not saving jupyter notebook
+2022-11-22 10:24:47,519 INFO    MainThread:6732 [wandb_init.py:_resume_backend():383] resuming backend
+2022-11-22 10:24:47,523 INFO    MainThread:6732 [wandb_init.py:_pause_backend():374] pausing backend
+2022-11-22 10:24:47,523 INFO    MainThread:6732 [jupyter.py:save_ipynb():377] not saving jupyter notebook
+2022-11-22 10:24:49,683 INFO    MainThread:6732 [wandb_init.py:_resume_backend():383] resuming backend
+2022-11-22 10:24:49,702 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Configure stats pid to 6732
+2022-11-22 10:24:49,702 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Loading settings from C:\Users\Calculos\.config\wandb\settings
+2022-11-22 10:24:49,702 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Loading settings from d:\UniSergio\BasketScripts\WaB\wandb\settings
+2022-11-22 10:24:49,702 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Loading settings from environment variables: {'_require_service': 'True'}
+2022-11-22 10:24:49,702 INFO    MainThread:6732 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program': '<python with no main file>'}
+2022-11-22 10:24:49,703 INFO    MainThread:6732 [wandb_init.py:_log_setup():461] Logging user logs to d:\UniSergio\BasketScripts\WaB\wandb\run-20221122_102449-1ncbwtiv\logs\debug.log
+2022-11-22 10:24:49,703 INFO    MainThread:6732 [wandb_init.py:_log_setup():462] Logging internal logs to d:\UniSergio\BasketScripts\WaB\wandb\run-20221122_102449-1ncbwtiv\logs\debug-internal.log
+2022-11-22 10:24:49,703 INFO    MainThread:6732 [wandb_init.py:init():495] calling init triggers
+2022-11-22 10:24:49,704 INFO    MainThread:6732 [wandb_init.py:init():498] wandb.init called with sweep_config: {}
+config: {'learning_rate': 0.0001, 'num_neurons': 10, 'acti_fun': 'relu', 'batch_size': 200, 'epochs': 500, 'architecture': 'OneHiddenLayer', 'dataset': '2018-19_traditional', 'loss': 0.3396, 'acc': 0.8741, 'val_loss': 0.7002, 'val_acc': 0.62}
+2022-11-22 10:24:49,704 INFO    MainThread:6732 [wandb_init.py:init():514] re-initializing run, found existing run on stack: okniozqz
+2022-11-22 10:24:49,706 INFO    MainThread:6732 [wandb_run.py:_finish():1728] finishing run progettobasket/Tra1819runs/okniozqz
+2022-11-22 10:24:49,706 ERROR   MainThread:6732 [jupyter.py:save_history():439] Run pip install nbformat to save notebook history
+2022-11-22 10:24:49,706 INFO    MainThread:6732 [jupyter.py:save_ipynb():377] not saving jupyter notebook
+2022-11-22 10:24:49,708 INFO    MainThread:6732 [wandb_init.py:_jupyter_teardown():393] cleaning up jupyter logic
+2022-11-22 10:24:49,708 INFO    MainThread:6732 [wandb_run.py:_atexit_cleanup():1931] got exitcode: 0
+2022-11-22 10:24:49,708 INFO    MainThread:6732 [wandb_run.py:_restore():1914] restore
+2022-11-22 10:24:49,708 INFO    MainThread:6732 [wandb_run.py:_restore():1920] restore done
+2022-11-22 10:24:49,715 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 510
+}
+
+2022-11-22 10:24:49,837 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 510
+}
+
+2022-11-22 10:24:50,206 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 510
+}
+
+2022-11-22 10:24:51,704 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 510
+}
+
+2022-11-22 10:24:52,409 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 4
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 3759
+}
+
+2022-11-22 10:24:52,513 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:52,621 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:52,731 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 510
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:52,839 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3759
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:52,946 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3785
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:53,055 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3785
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:53,170 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3785
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:53,279 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3785
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:53,400 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3785
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:53,800 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3785
+  total_bytes: 3785
+}
+
+2022-11-22 10:24:54,497 INFO    MainThread:6732 [wandb_run.py:_on_finish():2221] got exit ret: done: true
+exit_result {
+}
+file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3785
+  total_bytes: 3785
+}
+local_info {
+}
+
+2022-11-22 10:24:55,617 INFO    MainThread:6732 [wandb_run.py:_footer_history_summary_info():3305] rendering history
+2022-11-22 10:24:55,618 INFO    MainThread:6732 [wandb_run.py:_footer_history_summary_info():3337] rendering summary
+2022-11-22 10:24:55,622 INFO    MainThread:6732 [wandb_run.py:_footer_sync_info():3261] logging synced files
