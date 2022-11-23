@@ -7,17 +7,19 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_validate
 
 import tensorflow as tf
+
+#TODO fare autoencoder 1 level e anche mod quello di 2 level, vedi tabelle dei valori del livello hidden //
+#TODO mod  makModelL2, param must change in 0.001,0.01,0.0001 //
+#TODO mod makeModelDropout, p must change in 0.5 0.6 0.65 //
+#TODO do ADA and random see slide as number of estimators 
+
+
 """
 input
 hidden one level (change  neuron's number and activaton funtion)
 output  softmax activation
 
 """
-#TODO fare autoencoder 1 level e anche mod quello di 2 level, vedi tabelle dei valori del livello hidden 
-#TODO mod  makModelL2, param must change in 0.001,0.01,0.0001 //
-#TODO mod makeModelDropout, p must change in 0.5 0.6 0.65 //
-#TODO do ADA and random see slide as number of estimators 
-
 def makeModelSimple(neuronNumbers,activation,input_dimension):
     
      
@@ -27,6 +29,13 @@ def makeModelSimple(neuronNumbers,activation,input_dimension):
     outputs = keras.layers.Dense(2,activation="sigmoid" ,name="predictions")(hidden)
     
     return keras.Model(inputs=inputs, outputs=outputs)
+
+"""
+input
+hidden one level (change  neuron's number, activaton funtion and parameter of L2 regularization)
+output  softmax activation
+
+"""
 
 def makeModelL2(neuronNumbers,activation,input_dimension,pl2):
     
@@ -38,7 +47,13 @@ def makeModelL2(neuronNumbers,activation,input_dimension,pl2):
     outputs = keras.layers.Dense(2,name="predictions")(hidden)
 
     return keras.Model(inputs=inputs, outputs=outputs)
+"""
+input
+hidden one level (change  neuron's number, activaton funtion )
+dropout (change percentage of drop )
+output  softmax activation
 
+"""
 
 
 def makeModelDropout(neuronNumbers,activation,input_dimension,p):
@@ -90,6 +105,7 @@ def autoencoderOneLevel(input_dimension,neurons_hidden,neurons_code):
     decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
 
     return autoencoder, encoder, decoder
+
 def autoencoderTwoLevels(input_dimension,neurons_hidden_first_level,neurons_hidden_second_level,neurons_code):
 
     inputs = keras.Input(shape=(input_dimension,), name="input")
@@ -117,60 +133,82 @@ def autoencoderTwoLevels(input_dimension,neurons_hidden_first_level,neurons_hidd
     decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
 
     return autoencoder, encoder, decoder
-    
 
-def trainBasic(res,X,Y, x_validate, y_validate, model,kf,epochs=10):
-    
-    lossArray=[]
-    accuracyArray=[]
-    valAccuracyArray=[]
-    valLossArray=[]
-    validation_data=(np.asarray(x_validate), np.asarray(y_validate))
-    
-    for train_index , _ in kf.split(X):
-        trainX  = X.iloc[train_index,:]
-        trainY  = Y[train_index]
-        
-        
-        history=model.fit(trainX,trainY,batch_size=200,verbose=False,validation_data=validation_data,epochs=epochs)
-        
-      
-        
-        accuracyArray.append(round(np.mean(history.history['accuracy']),4))
-        lossArray.append(round(np.mean(history.history['loss']),4))
-        valLossArray.append(round(np.mean(history.history['val_loss']),4))
-        valAccuracyArray.append(round(np.mean(history.history['val_accuracy']),4))
-
-
-    res['loss']= round(np.mean(lossArray),4)
-    res['acc']= round(np.mean(accuracyArray),4)
-    res['val_loss']= round(np.mean(valLossArray),4)
-    res['val_acc']=round(np.mean(valAccuracyArray),4)
-
-    
-    return res
-
+ 
 def trainModelCrossValidation(res,X,Y, x_validate, y_validate, model,kf,epochs=50,batch_size=50):
-    lossArray=[]
-    accuracyArray=[]
-  
-    modelArray=[]
-   
-    
-    for train_index , _ in kf.split(X):
-        trainX  = X.iloc[train_index,:]
-        trainY  = Y[train_index]
-        history=model.fit(trainX,trainY,batch_size=batch_size,verbose=False,epochs=epochs)
-        accuracyArray.append(round(np.mean(history.history['accuracy']),4))
-        lossArray.append(round(np.mean(history.history['loss']),4))
-        
-        modelArray.append(model)
-        
-    index=accuracyArray.index(max(accuracyArray))
-    history=modelArray[index].evaluate(np.asarray(x_validate), np.asarray(y_validate),verbose=False,batch_size=batch_size)
-    res['loss']=lossArray[index] 
-    res['acc']=accuracyArray[index]
-    res['val_loss']= round(history[0],4)
-    res['val_acc']=round(history[1],4)
 
-    return res
+    loss_array=[]
+    accuracy_array=[]
+    val_loss_array=[]
+    val_accuracy_array=[]
+    
+   
+    validation_data=(np.asarray(x_validate), np.asarray(y_validate))
+    for train_index , _ in kf.split(X):
+        train_x  = X.iloc[train_index,:]
+        train_y  = Y[train_index]
+        history=model.fit(train_x,train_y,batch_size=batch_size,verbose=False,validation_data=validation_data,epochs=epochs)
+
+
+
+        accuracy_array.append(history.history['accuracy'])
+        loss_array.append(history.history['loss'])
+        val_accuracy_array.append(history.history['val_accuracy'])
+        val_loss_array.append(history.history['val_loss'])
+        
+
+    
+    res['loss']=np.mean(loss_array) 
+    res['acc']=np.mean(accuracy_array)
+    res['val_loss']=np.mean(val_loss_array) 
+    res['val_acc']=np.mean(val_accuracy_array)
+
+    res_hisory=[ np.mean(loss_array,axis=0),np.mean(accuracy_array,axis=0),np.mean(val_loss_array,axis=0),np.mean(val_accuracy_array,axis=0)]    
+    return res,res_hisory
+
+def wandbWrite(project_name,best_model_array,best_config_array,x_train,y_train,x_test,y_test,batch_size,epochs):
+   
+    for model,config in zip(best_model_array,best_config_array):
+        run = wandb.init(project=project_name, config=config)
+        name="onehidden_"+str(config["num_neurons"])
+        run.name=name
+        config = wandb.config
+        
+        history=model.fit(x_train,y_train,batch_size=batch_size,verbose=False,validation_data=(x_test, y_test),epochs=epochs)
+        for epoch in range (epochs):
+
+            wandb.log({'epochs': epoch,
+                'loss': history.history['loss'][epoch],
+                'acc': float(history.history['accuracy'][epoch]), 
+                'val_loss': history.history['val_loss'][epoch],
+                'val_acc':float(history.history['val_accuracy'][epoch])})
+        
+        run.finish()   
+
+
+
+
+  
+# def trainModelCrossValidation(res,X,Y, x_validate, y_validate, model,kf,epochs=50,batch_size=50):
+
+#     loss_array=[]
+#     accuracy_array=[]
+  
+#     model_array=[]
+   
+#     validation_data=(np.asarray(x_validate), np.asarray(y_validate))
+#     for train_index , _ in kf.split(X):
+#         train_x  = X.iloc[train_index,:]
+#         train_y  = Y[train_index]
+#         history=model.fit(train_x,train_y,batch_size=batch_size,verbose=False,epochs=epochs)
+#         accuracy_array.append(round(np.mean(history.history['accuracy']),4))
+#         loss_array.append(round(np.mean(history.history['loss']),4))
+        
+#         model_array.append(model)
+        
+#     index=accuracy_array.index(max(accuracy_array))
+#     history=model_array[index].evaluate(np.asarray(x_validate), np.asarray(y_validate),verbose=False,batch_size=batch_size)
+#     res['loss']=loss_array[index] 
+#     res['acc']=accuracy_array[index]
+#     res['val_loss']= round(history[0],4)
+#     res['val_acc']=round(history[1],4)       
