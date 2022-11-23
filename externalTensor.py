@@ -42,7 +42,7 @@ def makeModelL2(neuronNumbers,activation,input_dimension,pl2):
     
     inputs = keras.Input(shape=(input_dimension,), name="input")
     hidden = keras.layers.Dense(neuronNumbers, activation=activation,name="hidden",
-    kernel_regularizer= (pl2))(inputs)
+    kernel_regularizer=tf.keras.regularizers.L2(l2=pl2) )(inputs)
     
     outputs = keras.layers.Dense(2,name="predictions")(hidden)
 
