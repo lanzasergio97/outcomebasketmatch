@@ -1,0 +1,17 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.9.13",
+    "heartbeatAt": "2022-11-24T12:17:56.894707",
+    "startedAt": "2022-11-24T12:17:55.318586",
+    "docker": null,
+    "gpu": "NVIDIA GeForce GTX 1060 6GB",
+    "gpu_count": 1,
+    "cpu_count": 12,
+    "cuda": null,
+    "args": null,
+    "state": "running",
+    "program": "<python with no main file>",
+    "host": "Calculos",
+    "username": "Calculos",
+    "executable": "d:\\UniSergio\\BasketScripts\\Scripts\\python.exe"
+}

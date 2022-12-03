@@ -62,7 +62,7 @@ class boxScore:
         }
        
         index_second_team=dict_mode[mode]
-            
+           
         # Retrive all BoxScores from the selected season
         with open('BoxScoresFile/'+self.name,'r') as f:
                 column_check=0

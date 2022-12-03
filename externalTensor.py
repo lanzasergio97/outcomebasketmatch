@@ -9,8 +9,6 @@ from sklearn.model_selection import cross_validate
 import tensorflow as tf
 
 #TODO fare autoencoder 1 level e anche mod quello di 2 level, vedi tabelle dei valori del livello hidden //
-#TODO mod  makModelL2, param must change in 0.001,0.01,0.0001 //
-#TODO mod makeModelDropout, p must change in 0.5 0.6 0.65 //
 #TODO do ADA and random see slide as number of estimators 
 
 
