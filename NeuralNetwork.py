@@ -7,22 +7,36 @@ import torch.optim as optim # For all Optimization algorithms, SGD, Adam, etc.
 
 class NN(nn.Module):
     
-    def __init__(self, input_size, size_hidden_level,act,learning_rate,pl2=0):
+    def __init__(self, input_size, size_hidden_level,act,learning_rate,pl2=0,dropout=0):
         
         super(NN, self).__init__()
         self.fc1 = nn.Linear(input_size, size_hidden_level)
-        self.fc2 = nn.Linear(size_hidden_level, 2)
+        
+        if (dropout!=0):
+            self.dropout=nn.Dropout(dropout)
+            self.fc2 = nn.Linear(size_hidden_level, 2)
+        else:
+            self.fc2 = nn.Linear(size_hidden_level, 2)
+
         self.acti=act
-        self.loss=F.binary_cross_entropy_with_logits
+        self.loss=torch.binary_cross_entropy_with_logits
+        
+        
+           
+        #weight_decay used for L2 regularization, if pl2=0 the regularization doesn't work   
         optimizer = optim.SGD(self.parameters(), lr=learning_rate, weight_decay=pl2)
+
         self.optimizer=optimizer
+
     def forward(self, x):
         if( self.acti=="relu"):
-            x = F.relu(self.fc1(x))
+            x = torch.relu(self.fc1(x))
+            
         if(self.acti=="sigmoid"):
             x = torch.sigmoid(self.fc1(x))
-
-        x =F.softmax(input=self.fc2(x),dim=1) 
+        if(self.dropout):
+            x = self.dropout(x)
+        x =torch.softmax(input=self.fc2(x),dim=1) 
         return x 
     def reset_weights(self):
         if isinstance(self, nn.Conv2d) or isinstance(self, nn.Linear):
@@ -96,6 +110,7 @@ class NN(nn.Module):
         #Check if this models is the better than the previous based on accuracy on the validation set
         tmp_val=torch.mean(acc_val_array_fold[:,-1],dtype=torch.float32)
         if(tmp_val>best_config_tmp['val_acc']):
+
             # Change the configuration file with the values of the best model
             config["loss"]=torch.mean(loss_array_fold[:,-1],dtype=torch.float32).item()
             config["acc"]=torch.mean(acc_array_fold[:,-1],dtype=torch.float32).item()
@@ -129,7 +144,6 @@ class NN(nn.Module):
             
             loss=(running_loss/len(test_LL))
             acc=(round(correct_predictions.item()/total_elements,3))
-            
+        
         return torch.tensor([[loss]]).to(device=device),torch.tensor([[acc]]).to(device=device)
-
 
