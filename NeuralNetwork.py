@@ -7,13 +7,14 @@ import torch.optim as optim # For all Optimization algorithms, SGD, Adam, etc.
 
 class NN(nn.Module):
     
-    def __init__(self, input_size, size_hidden_level,act,learning_rate):
+    def __init__(self, input_size, size_hidden_level,act,learning_rate,pl2=0):
         
         super(NN, self).__init__()
         self.fc1 = nn.Linear(input_size, size_hidden_level)
         self.fc2 = nn.Linear(size_hidden_level, 2)
         self.acti=act
-        optimizer = optim.SGD(self.parameters(), lr=learning_rate)
+        self.loss=F.binary_cross_entropy_with_logits
+        optimizer = optim.SGD(self.parameters(), lr=learning_rate, weight_decay=pl2)
         self.optimizer=optimizer
     def forward(self, x):
         if( self.acti=="relu"):
@@ -63,9 +64,7 @@ class NN(nn.Module):
                     
                     # forward propagation
                     scores = self(data)
-
-                    loss = F.binary_cross_entropy(scores, targets)
-                
+                    loss = self.loss(scores, targets)
                     # zero previous gradients
                     self.optimizer.zero_grad()
                     
@@ -82,6 +81,7 @@ class NN(nn.Module):
                 loss_val,acc_val=self.test_check(test_LL=test_LL,device=device)
                 
                 # Values for a single Epoch of loss and accuracy both for training and validation
+                
                 loss_val_array_epoch=torch.cat((loss_val_array_epoch, loss_val), 1)
                 acc_val_array_epoch=torch.cat((acc_val_array_epoch, acc_val), 1)
                 loss_array_epoch=torch.cat((loss_array_epoch,torch.tensor([[running_loss/len(train_loader_fold)]]).to(device=device) ), 1)
