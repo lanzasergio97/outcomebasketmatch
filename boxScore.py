@@ -126,11 +126,12 @@ class boxScore:
         df_average_stats.columns = column_names[0:separator]
 
         # NORMALIZE THE DATA
-        # for cN in column_names:
-        #     if(cN!="TEAM_ID" and cN!="TEAM_ID_O"):
-        #         df_box_scores[cN] = df_box_scores[cN] /df_box_scores[cN].abs().max()
-        #         if(not cN.__contains__("_O")):
-        #             df_average_stats[cN]=df_average_stats[cN]/df_average_stats[cN].abs().max()
+        for cN in column_names:
+            if(cN!="TEAM_ID" and cN!="TEAM_ID_O"):
+                df_box_scores[cN] = df_box_scores[cN] /df_box_scores[cN].abs().max()
+                #This needs just for the average_stats, so it's ignored the columns for the opposite team
+                if(not cN.__contains__("_O")):
+                    df_average_stats[cN]=df_average_stats[cN]/df_average_stats[cN].abs().max()
 
         self.df_box_scores=df_box_scores
         self.average_data=df_average_stats

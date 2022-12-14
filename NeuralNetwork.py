@@ -5,13 +5,14 @@ import torch.nn.functional as F # All functions that don't have any parameters
 import numpy as np
 import torch.optim as optim # For all Optimization algorithms, SGD, Adam, etc.
 
+#TODO config file: repetition of loss, acc and val_loss, val_acc: mantain just the last as confrontation
 class NN(nn.Module):
     
     def __init__(self, input_size, size_hidden_level,act,learning_rate,pl2=0,dropout=0):
         
         super(NN, self).__init__()
         self.fc1 = nn.Linear(input_size, size_hidden_level)
-        
+        self.dropout_rate=dropout
         if (dropout!=0):
             self.dropout=nn.Dropout(dropout)
             self.fc2 = nn.Linear(size_hidden_level, 2)
@@ -19,8 +20,7 @@ class NN(nn.Module):
             self.fc2 = nn.Linear(size_hidden_level, 2)
 
         self.acti=act
-        self.loss=torch.binary_cross_entropy_with_logits
-        
+        self.loss=F.binary_cross_entropy
         
            
         #weight_decay used for L2 regularization, if pl2=0 the regularization doesn't work   
@@ -34,15 +34,18 @@ class NN(nn.Module):
             
         if(self.acti=="sigmoid"):
             x = torch.sigmoid(self.fc1(x))
-        if(self.dropout):
+
+        if(self.dropout_rate!=0):
             x = self.dropout(x)
-        x =torch.softmax(input=self.fc2(x),dim=1) 
+            x =torch.softmax(input=self.fc2(x),dim=1)
+        else:
+            x =torch.softmax(input=self.fc2(x),dim=1) 
         return x 
     def reset_weights(self):
         if isinstance(self, nn.Conv2d) or isinstance(self, nn.Linear):
             self.reset_parameters()
 
-
+    
     def MyTrain (self,kf,config,best_config_tmp,best_history_tmp,train_LL,test_LL,device):
         
         loss_array_fold=torch.tensor([]).to(device=device)
@@ -112,9 +115,9 @@ class NN(nn.Module):
         if(tmp_val>best_config_tmp['val_acc']):
 
             # Change the configuration file with the values of the best model
-            config["loss"]=torch.mean(loss_array_fold[:,-1],dtype=torch.float32).item()
-            config["acc"]=torch.mean(acc_array_fold[:,-1],dtype=torch.float32).item()
-            config["val_loss"]=torch.mean(loss_val_array_fold[:,-1],dtype=torch.float32).item()
+            # config["loss"]=torch.mean(loss_array_fold[:,-1],dtype=torch.float32).item()
+            # config["acc "]=torch.mean(acc_array_fold[:,-1],dtype=torch.float32).item()
+            # config["val_loss"]=torch.mean(loss_val_array_fold[:,-1],dtype=torch.float32).item()
             config["val_acc"]=tmp_val.item()
             # Create the history file, it will be used for draw the graph with WandB
             best_history_tmp=[ loss_array_fold,acc_array_fold,loss_val_array_fold,acc_val_array_fold] 
